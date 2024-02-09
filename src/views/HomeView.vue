@@ -5,10 +5,26 @@
         class="py-2 px-1 w-full bg-transparent border-b focus:border-blue-900 focus:outline-none focus:shadow-[0px_1px_0_0_#004E71]">
 
         <ul v-if="mapBoxSearchResults !== null" class="absolute bg-blue-900 text-white w-full shadow-md py-2 px-1 top-[66px]">
-          <li v-for="item in mapBoxSearchResults" :key="item.id" class="py-2 cursor-pointer">
+
+
+          <!-- So incase there's an error with the fetching, the error will be displayed here -->
+          <!-- Remember, the searchError is only TRUE in the catch-block. -->
+          <p v-if="searchError">
+            Sorry, something went wrong. Please try again.
+          </p>
+
+          <!-- And this is another error handling. This is gonna output if the search function can't populate any result AND if there's no server error. If the error isn't server-related, then the error is from the search parameter most likely. -->
+          <p v-if="!serverError && mapBoxSearchResults.length === 0">
+            No results match your query! Try a different term.
+          </p>
+
+
+          <template v-else>
+            <li v-for="item in mapBoxSearchResults" :key="item.id" class="py-2 cursor-pointer">
             {{ item.place_name }}
           </li>
           <!-- Since our search results come with an ID each, I can easily make the 'binding key' the IDs to maintain the uniqueness. -->
+          </template>
         </ul>
     </div>
   </main>
@@ -36,6 +52,9 @@ const queryTimeOut = ref(null);
 const mapBoxSearchResults = ref(null);
 // The above variable is where I'm gonna store the final results of my fetching.
 
+const searchError = ref(null);
+// The above is needed to handle errors.
+
 // The below function is to target the "queryTimeOut" function to set some timeout for it.
 // Now, after 300ms i.e 3secs, the request to the API should be made, and should be stored into the variable 'queryTimeOut'
 const getSearchResults = () => {
@@ -50,13 +69,17 @@ const getSearchResults = () => {
     // Trying to check if the 'searchQuery' isn't empty before I make my API fetch coz of course I'm not gonna make any request if the input field is empty.
     if (searchQuery.value !== "") {
 
-      const result = await axios.get(`https://api.mapbox.com/geocoding/v5/mapbox.places/${searchQuery.value}.json?access_token=${mapBoxAPIKey}&types=place`);
+      try {
+        const result = await axios.get(`https://api.mapbox.com/geocoding/v5/mapbox.places/${searchQuery.value}.json?access_token=${mapBoxAPIKey}&types=place`);
       // The endpoint is gonna return a promise, that's why I used async-await.
 
       // Storing the main/final data we need in a variable.
-      mapBoxSearchResults.value = result.data.features;
-
-      console.log(mapBoxSearchResults.value);
+        mapBoxSearchResults.value = result.data.features;
+       // console.log(mapBoxSearchResults.value);
+      } catch {
+        searchError.value = true;
+        // Anything that takes us to the catch-block, it means there's an error so therefore I am acknowledging the fact that there's an error.
+    }
 
       return;
       // I needed to return....because even if our condition is true, it'll execute the task right, and also proceed to execute all other tasks that come after. And we don't want that.
