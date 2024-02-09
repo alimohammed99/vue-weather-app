@@ -20,8 +20,11 @@
 
 
           <template v-else>
-            <li v-for="item in mapBoxSearchResults" :key="item.id" class="py-2 cursor-pointer">
+            <!-- I wanna run a function(previewCity) when User clicks on any place, I wanna redirect the route to an individual page to view the weather details for the clicked place. -->
+            <!-- I passed our loop key/object in the bracket coz that's what User will be clicking -->
+            <li v-for="item in mapBoxSearchResults" :key="item.id" class="py-2 cursor-pointer" @click="previewCity(item)">
             {{ item.place_name }}
+            <!-- 'place_name' is an attribute gotten from the API. So the <li> will list places User types. -->
           </li>
           <!-- Since our search results come with an ID each, I can easily make the 'binding key' the IDs to maintain the uniqueness. -->
           </template>
@@ -94,5 +97,19 @@ const getSearchResults = () => {
 
 
 }
+
+
+// Remember "item" is our loop key/object from up there. It was passed as a parameter alongside the function up there.
+const previewCity = (item) => {
+  console.log(item.place_name)
+
+
+  // I need to do this coz the data that come with the "item" has a lot of info and I am interested in extracting only the City and State.
+  // The data that come with the result looks like this: {{{place_name: "Ohio, Illinois, United States"}}}
+  // So I need the City and the State alone.
+// So what I'm saying is....City and State should be extracted from the data and the char(',') should be eradicated and turned to a normal space character.
+
+  const [city, state] = item.place_name.split(",");
+};
 
 </script>
