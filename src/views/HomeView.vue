@@ -1,6 +1,8 @@
 <template>
   <main class="container text-white">
     <div class="pt-4 mb-8 relative">
+
+      <!-- The "@input" below means as soons as User starts typing. -->
       <input @input="getSearchResults" v-model="searchQuery" type="text" placeholder="Search for a City/State"
         class="py-2 px-1 w-full bg-transparent border-b focus:border-blue-900 focus:outline-none focus:shadow-[0px_1px_0_0_#004E71]">
 
@@ -8,7 +10,7 @@
 
 
           <!-- So incase there's an error with the fetching, the error will be displayed here -->
-          <!-- Remember, the searchError is only TRUE in the catch-block. -->
+          <!-- Remember, the searchError is only TRUE in the catch-block. --> 
           <p v-if="searchError">
             Sorry, something went wrong. Please try again.
           </p>
@@ -42,6 +44,7 @@
 
 import { ref } from "vue";
 import axios from "axios";
+import { useRouter } from "vue-router";
 
 const mapBoxAPIKey = "pk.eyJ1IjoiYWxpbW9oYW1tZWQ5OSIsImEiOiJjbHNib3o1M2gwZWV1MnFuc3gxcXlnZXJsIn0.2Uat_5S22Q4iMf28mJpKPQ";
 // The above is the mapbox API key and it is being used in fetching the data in the axios function.
@@ -98,6 +101,9 @@ const getSearchResults = () => {
 
 }
 
+const router = useRouter();
+// I need to initialize the router before using it. I've imported it above.
+
 
 // Remember "item" is our loop key/object from up there. It was passed as a parameter alongside the function up there.
 const previewCity = (item) => {
@@ -107,9 +113,18 @@ const previewCity = (item) => {
   // I need to do this coz the data that come with the "item" has a lot of info and I am interested in extracting only the City and State.
   // The data that come with the result looks like this: {{{place_name: "Ohio, Illinois, United States"}}}
   // So I need the City and the State alone.
-// So what I'm saying is....City and State should be extracted from the data and the char(',') should be eradicated and turned to a normal space character.
+// So what I'm saying is....City and State should be extracted from the data and the char(',') between them should be eradicated and turned to a normal space character.
 
   const [city, state] = item.place_name.split(",");
+
+  // I want to from here push Users to another route which is gonn be for a particular city.
+// The params here are the params I passed from the router.
+  router.push({
+    name: "CityView",
+    prams: { state: state, city: city },
+    // query: {}
+    // We actually pass query while doing routes if we wanna filter/customize the data that's displayed on the new route we are going maybe based on User input or something, or if we wanna send some data/parameters along with the URL.
+  })
 };
 
 </script>

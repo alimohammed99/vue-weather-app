@@ -11,7 +11,7 @@ const router = createRouter({
             component: HomeView
         },
         {
-            // I need some parameters here which are "State" and "City" in that order......Since we're talking of individual weather details based on the selected state and city.
+            // I need some parameters here which are "State" and "City" in that order......Since we're talking of individual weather details based on the selected state and city....just to get the weather details of a particular City.
             path: '/weather/:state/:city',
             name: 'CityView',
             component: CityView
