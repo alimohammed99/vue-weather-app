@@ -117,14 +117,24 @@ const previewCity = (item) => {
 
   const [city, state] = item.place_name.split(",");
 
-  // I want to from here push Users to another route which is gonn be for a particular city.
+  // I want to from here push Users to another route which is gonn be for   a particular city.
 // The params here are the params I passed from the router.
   router.push({
     name: "CityView",
-    prams: { state: state, city: city },
-    // query: {}
+
+    params: { state: state.replaceAll(" ", ""), city: city },
+    // I discovered there are some spaces in the parameters. So I'm replacing these spaces with empty string.
+
+    query: {
+      lat: item.geometry.coordinates[1],
+      lng: item.geometry.coordinates[0],
+      preview: true,
+    },
+
+    // These properties I'm fetching are comming from the MapBox API.
+
     // We actually pass query while doing routes if we wanna filter/customize the data that's displayed on the new route we are going maybe based on User input or something, or if we wanna send some data/parameters along with the URL.
-  })
+  });
 };
 
 </script>
